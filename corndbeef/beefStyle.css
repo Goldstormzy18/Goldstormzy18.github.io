@@ -30,3 +30,17 @@
     height: 30pt;
     margin-right: 10pt;
 }
+
+.textBackground{
+    background-color: #99ff99; 
+    margin-left:20%;
+    margin-right:20%;
+    margin-top:10%;
+    margin-bottom:10%;
+    text-align: center;
+}
+
+.text{
+    margin:50pt;
+    font-size: 20pt;
+}
