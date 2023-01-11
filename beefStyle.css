@@ -1,0 +1,46 @@
+.navElement{
+    padding: 3pt;
+    border-style: solid;
+    margin: 3pt;
+    font-size: large;
+    font-weight: bold;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    color: #002000;
+    text-decoration: none;
+}
+
+.navbar{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    display: flex;
+    padding: 10pt;
+}
+
+.header{
+    display: flex;
+    background-color: #007000;
+    margin: 0pt;
+}
+
+.headimg{
+    padding: 10pt;
+    width: 90pt;
+    height: 30pt;
+    margin-right: 10pt;
+}
+
+.textBackground{
+    background-color: #99ff99; 
+    margin-left:20%;
+    margin-right:20%;
+    margin-top:10%;
+    margin-bottom:10%;
+    text-align: center;
+}
+
+.text{
+    margin:50pt;
+    font-size: 20pt;
+}
