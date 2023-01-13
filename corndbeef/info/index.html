@@ -19,12 +19,12 @@
         <p class="navElement">Contact </p>
     </nav>
 </header>
-<button>Auto Scroll</button>
+<button onClick="scrollDown()">Auto Scroll</button>
 <div class="textBackground">
     <br>
     <h1 id="firstHeader">OUR MISSION</h1>
     <p class="text" id="firstText">
-        Corn’d Beef is a company set on curing people of veganism. We are planning to do so by introducing the Corn’d Beef patty. The patty, made of ½ beef, ½ veggies, will suit as a transition patty to turn vegans back to normal. Psychologically, each patty a vegan eats will be justified by the reduced beef content, making them think that less cows were slaughtered when in reality, the same amount of beef is being used, just distributed thinly to make more patties. The Corn’d Beef company plans to open up a restaurant to sell specialty burgers to transitioning vegans to help them embrace the omnivorous, meat filled lifestyle. We also plan to sell pre-packaged patties in Whole Foods across the United States of America.  
+        Corn’d Beef is a company set on curing people of veganism. We are planning to do so by introducing the Corn’d Beef patty. The patty, made of ½ beef, ½ veggies, will suit as a transition patty to turn vegans back to normal. The Corn’d Beef company plans to open up a restaurant to sell specialty burgers to transitioning vegans to help them embrace the omnivorous, meat filled lifestyle. We also plan to sell pre-packaged patties in Whole Foods across the United States of America.  
     </p>
     <h1>OUR COMPETION</h1>
     <p class="text">
@@ -61,11 +61,36 @@
 
     <br>
     
-
+    
     
     
 
 </div>
+<script>
 
+    var scrolled = 0;
+
+
+    function scrollDown(){
+        var i = 0;
+        window.scrollTo(0, 0);
+        var interv = setInterval(function(){
+            window.scrollBy(0, 1);
+            i++;
+            if(i > 2000){
+                i = 0;
+                
+                window.scrollTo(0, 0);
+            }
+        }, 30);
+
+        
+
+
+        
+    }
+
+
+</script>
 
 </body>
