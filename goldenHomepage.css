@@ -20,4 +20,6 @@
 }
 .mainBox{
     background-color: #eeeccd;
+    width: 50%;
+    margin: auto;
 }
