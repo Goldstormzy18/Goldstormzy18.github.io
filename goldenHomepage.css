@@ -1,0 +1,23 @@
+.siteBox{
+    background-color: #7fffd4;
+    border: 2px;
+    border-color: #44ddbb;
+    border-style: solid;
+    width: 100pt;
+    text-align: center;
+    text-decoration: none;
+    color: black;
+    margin: 25pt;
+}
+.siteBoxImg{
+    width: 75pt;
+    margin-top: 5pt;
+    text-align: center;
+    background-color: white;
+    border-style: solid;
+    border-color: white;
+    border-width: 4px;
+}
+.mainBox{
+    background-color: #eeeccd;
+}
