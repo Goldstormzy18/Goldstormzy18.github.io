@@ -3,6 +3,7 @@ var worldWidth = 50;
 var worldHeight = 30;
 var keyPressDown = false;
 
+var inBattle = false;
 var life = 3;
 var level = 1;
 updateGui();
@@ -120,7 +121,8 @@ function movePlayer(dirX, dirY){
         updateScreen();
     }else{
         if(playerObject() == "H"){
-            life++;
+            life ++;
+            updateGui();
         }
         worldString = worldString.substring(0, coordsToWorldPos(playerX, playerY)) + "P" + worldString.substring(coordsToWorldPos(playerX, playerY) + 1, worldString.length)
         updateScreen();
@@ -190,6 +192,7 @@ function battleStart(){
     disableMovementGui();
     battleTiming = 0;
     enemyHealth = 9;
+    inBattle = true;
     updateBattleGui();
     battleLoopOrigin = setInterval(battleLoop, 60);
 }
@@ -207,6 +210,7 @@ function attackButton(){
         //document.getElementById("console").innerHTML = detectPos(0, -1);
         enableMovementGui();
         clearInterval(battleLoopOrigin);
+        inBattle = false;
         if(detectPos(1, 0)   == "M"){
             deleteEnemy(1, 0);
         }
@@ -307,23 +311,39 @@ function rightButton(){
 //3 lines of code take the same space as a for statement and is a bit easier on the eyes
 function superUpButton(){
     movePlayer(0, -1);
-    movePlayer(0, -1);
-    movePlayer(0, -1);
+    if(!inBattle){
+        movePlayer(0, -1);
+    }
+    if(!inBattle){
+        movePlayer(0, -1);
+    }
 }
 function superDownButton(){
     movePlayer(0, 1);
+    if(!inBattle){
     movePlayer(0, 1);
+    }
+    if(!inBattle){
     movePlayer(0, 1);
+    }
 }
 function superLeftButton(){
     movePlayer(-1, 0);
+    if(!inBattle){
     movePlayer(-1, 0);
+    }
+    if(!inBattle){
     movePlayer(-1, 0);
+    }
 }
 function superRightButton(){
     movePlayer(1, 0);
+    if(!inBattle){
     movePlayer(1, 0);
+    }
+    if(!inBattle){
     movePlayer(1, 0);
+    }
 }
 
 
