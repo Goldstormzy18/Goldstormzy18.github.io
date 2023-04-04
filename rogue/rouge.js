@@ -17,13 +17,13 @@ var enemyHealth = 9;
 
 var battleScreen = "0123456789";
 
+var roomListX = [];
+var roomListY = [];
 generateWorld(6);
 
 enableMovementGui();
 disableBattleGui();
 
-var roomListX = [];
-var roomListY = [];
 
 updateScreen();
 
@@ -159,6 +159,19 @@ function deleteEnemy(offsetX, offsetY){
     worldString = worldString.substring(0, coordsToWorldPos(playerX + offsetX, playerY + offsetY)) + " " + worldString.substring(coordsToWorldPos(playerX + offsetX, playerY + offsetY) + 1, worldString.length);
     updateScreen();
 }
+function newGame(){
+    enableMovementGui();
+    clearInterval(battleLoopOrigin);
+    inBattle = false;
+    life = 3;
+    level = 1;
+    roomListX = [];
+    roomListY = [];
+    generateWorld(6);
+    enableMovementGui();
+    disableBattleGui();
+    updateScreen(); 
+}
 
 //generates an object depending on which object you want
 function generateObject(object){
@@ -238,6 +251,9 @@ function attackButton(){
     }else{
         life--;
         updateGui();
+        if(life <= 0){
+            newGame();
+        }
     }
 }
 
