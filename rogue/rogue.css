@@ -1,0 +1,18 @@
+#display{
+    text-align: center; 
+    background-color: black; 
+    color: white; 
+    font-family: "Courier New", Courier, monospace;
+}
+#console{
+    text-align: center; 
+    background-color: black; 
+    color: white; 
+    font-family: "Courier New", Courier, monospace;
+}
+#battleView{
+    text-align: center; 
+    background-color: black; 
+    color: white; 
+    font-family: "Courier New", Courier, monospace;
+}
