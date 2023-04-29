@@ -1,0 +1,9 @@
+#display{
+    /* width: 1024px;  */
+    image-rendering: crisp-edges;
+    display: inline;
+}
+#displayBorder{
+    width: 100%;
+    text-align: center;
+}
