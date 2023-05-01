@@ -1,6 +1,7 @@
 var camX = 0;
 var camY = 0;
 var speed = 4;
+var fps = 30;
 //wasd
 var contLayout = [0,0,0,0,0,0,0,0,0,0,0];
 var level = "01010101010101011717171717171717262626262626262625252525252525250101010101010101010101010101010101010101010101010101010101010101";
@@ -8,7 +9,7 @@ var worldWidth  = 8;
 var worldHeight = 8;
 var animationTimer = 0;
 var editing = true;
-var editTile = 0;
+var editTile = "00";
 
 var mouseDown = false;
 
@@ -35,7 +36,7 @@ initListeners();
 
 ctx.fillRect(0,0,256,192);
 
-setInterval(mainLoop, 1000/30);
+setInterval(mainLoop, 1000/fps);
 
 display.style.width = (256 * displayScale).toString() + "px";
 
@@ -47,16 +48,28 @@ function mainLoop(){
     drawLevel();
 
     if(editing){
-        ctx.drawImage(tilesets[0], 16 * (editTile % (tilesets[0].width / 16)),  16 * Math.floor(editTile / (tilesets[0].width / 16)), 16, 16, (Math.round((mouseX - 8 - (camX % 16)) / 16) * 16) + (camX % 16), (Math.round((mouseY - 8 - (camY % 16)) / 16) * 16) + (camY % 16), 16, 16);
+        document.getElementById("debug").innerHTML = level;
+        var editX = (Math.round((mouseX - 8 - (camX % 16)) / 16) * 16) + (camX % 16);
+        var editY = (Math.round((mouseY - 8 - (camY % 16)) / 16) * 16) + (camY % 16);
+        ctx.drawImage(tilesets[0], 16 * (editTile % (tilesets[0].width / 16)),  16 * Math.floor(editTile / (tilesets[0].width / 16)), 16, 16, editX, editY, 16, 16);
         if(contLayout[10]){
             drawPalette();
-            editTile = Math.floor(mouseX / 16) + (Math.floor(mouseY / 16) * (tilesets[0].width / 16));
+            editTile = (Math.floor(mouseX / 16) + (Math.floor(mouseY / 16) * (tilesets[0].width / 16))).toString();
+            if(editTile.length == 1){
+                editTile = "0" + editTile;
+            }
+        }
+        if(mouseDown){
+            //level = level.substring(0, ) + editTile + level.substring();
+            //document.getElementById("debug").innerHTML = ((editX - camX) / 16) + (((editY - camY) / 16) * worldWidth);
+            var whichSub = (((editX - camX) / 16) + (((editY - camY) / 16) * worldWidth)) * 2;
+            level = level.substring(0, whichSub) + editTile + level.substring(whichSub + 2, worldHeight * worldWidth * 2);
+            document.getElementById("debug").innerHTML = editTile;
         }
     }else{
         drawPlayer();        
     }
 
-    document.getElementById("debug").innerHTML = mouseY;
 
 }
 
@@ -170,7 +183,7 @@ display.addEventListener("mousemove", function(event){
 display.addEventListener("mousedown", function(){
     mouseDown = true;
 });
-display.addEventListener("mouseup", function(){
+display.addEventListener("mouseup", function(event){
     mouseDown = false;
 });
 
