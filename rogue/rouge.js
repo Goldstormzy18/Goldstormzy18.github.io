@@ -362,7 +362,7 @@ function superRightButton(){
     }
 }
 
-document.addEventListener('keypress', function(event){
+document.addEventListener('keydown', function(event){
         var name = event.key;
         var code = event.code;
         if(name == "w"){
