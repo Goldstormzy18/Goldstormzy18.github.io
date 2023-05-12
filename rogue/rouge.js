@@ -365,16 +365,16 @@ function superRightButton(){
 document.addEventListener('keypress', function(event){
         var name = event.key;
         var code = event.code;
-        if(name == "ArrowUp"){
+        if(name == "w"){
             upButton();
         }
-        if(name == "ArrowLeft"){
+        if(name == "a"){
             leftButton();
         }
-        if(name == "ArrowDown"){
+        if(name == "s"){
             downButton();
         }
-        if(name == "ArrowRight"){
+        if(name == "d"){
             rightButton();
         }
       }, false);
