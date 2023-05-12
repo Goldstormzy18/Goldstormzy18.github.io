@@ -363,6 +363,7 @@ function superRightButton(){
 }
 
 document.addEventListener('keydown', function(event){
+    if(!inBattle){
         var name = event.key;
         var code = event.code;
         if(name == "w"){
@@ -377,7 +378,8 @@ document.addEventListener('keydown', function(event){
         if(name == "d"){
             rightButton();
         }
-      }, false);
+    }
+}, false);
 
 
 
