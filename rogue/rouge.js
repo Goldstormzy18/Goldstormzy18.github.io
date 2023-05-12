@@ -362,7 +362,22 @@ function superRightButton(){
     }
 }
 
-
+document.addEventListener('keypressed', function(event){
+        var name = event.key;
+        var code = event.code;
+        if(name == "ArrowUp"){
+            upButton();
+        }
+        if(name == "ArrowLeft"){
+            leftButton();
+        }
+        if(name == "ArrowDown"){
+            downButton();
+        }
+        if(name == "ArrowRight"){
+            rightButton();
+        }
+      }, false);
 
 
 
