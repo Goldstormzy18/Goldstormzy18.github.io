@@ -362,7 +362,7 @@ function superRightButton(){
     }
 }
 
-document.addEventListener('keypressed', function(event){
+document.addEventListener('keypress', function(event){
         var name = event.key;
         var code = event.code;
         if(name == "ArrowUp"){
