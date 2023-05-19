@@ -5,12 +5,12 @@ var speed = 4;
 var fps = 30;
 //wasd
 var contLayout = [false, false, false, false, false, false, false, false, false, false, false];
-var chunkHeights = [1,1,1,0,0,0,
-                    2,2,1,0,0,0,
+var chunkHeights = [2,2,1,0,0,0,
+                    2,2,1,0,1,0,
                     2,2,1,1,0,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
-                    1,1,1,1,1,1,
+                    1,1,1,1,1,0,
                     1,0,0,0,0,0,
                     0,0,0,0,0,0];
 var chunkTiles = [];
@@ -72,8 +72,9 @@ function mainLoop(){
     drawLayer(0, 0, 0);
     drawLayer(1, 0, 0);
     drawLayer(2, 0, 0);
-    //drawLayer(2, 0, 0);
     drawPlayer();
+    drawLayer(3, 0, 0);
+    //drawLayer(2, 0, 0);
 
     mouseClicked = false;
     rightMouseClicked = false;
@@ -88,13 +89,18 @@ function drawLayer(height, xPos, yPos){
         var ramX = xPos + (x * 16);
         for(var y = 0; y < chunkHeight; y++){
             if(chunkHeights[i] == height){
-                for(var h = 0; h < chunkWalls[i]; h++){
-                    consoleLog(tileIndex);
+                //for(var h = 0; h < chunkWalls[i]; h++){
+                //    consoleLog(chunkWalls);
+                //    drawTile(height, ramX, yHeight + (y * 16) + ((h + 1) * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
+                //    tileIndex++;
+                //}
+                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
+            }else{
+                if(chunkWalls[i] + chunkHeights[i]){
+                    consoleLog(chunkWalls);
                     drawTile(height, ramX, yHeight + (y * 16) + ((h + 1) * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
                     tileIndex++;
                 }
-                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
-            }else{
                 for(var h = 0; h < chunkWalls[i]; h++){
                     tileIndex++;
                 }
