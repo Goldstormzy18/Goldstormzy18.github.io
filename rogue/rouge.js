@@ -362,7 +362,24 @@ function superRightButton(){
     }
 }
 
-
+document.addEventListener('keydown', function(event){
+    if(!inBattle){
+        var name = event.key;
+        var code = event.code;
+        if(name == "w"){
+            upButton();
+        }
+        if(name == "a"){
+            leftButton();
+        }
+        if(name == "s"){
+            downButton();
+        }
+        if(name == "d"){
+            rightButton();
+        }
+    }
+}, false);
 
 
 
