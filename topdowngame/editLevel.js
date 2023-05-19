@@ -87,6 +87,11 @@ function drawLayer(height, xPos, yPos){
     var yHeight = yPos - (height * 16)
     for(var x = 0; x < chunkWidth; x++){
         var ramX = xPos + (x * 16);
+        if(chunkWalls[i] + chunkHeights[i] == height + 1){
+            consoleLog(height);
+            drawTile(height, ramX, yHeight + (y * 16) + ((height) * 16), 0, 16);
+            //tileIndex++;
+        }
         for(var y = 0; y < chunkHeight; y++){
             if(chunkHeights[i] == height){
                 //for(var h = 0; h < chunkWalls[i]; h++){
@@ -95,15 +100,13 @@ function drawLayer(height, xPos, yPos){
                 //    tileIndex++;
                 //}
                 drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
+                consoleLog(height);
             }else{
-                if(chunkWalls[i] + chunkHeights[i]){
-                    consoleLog(chunkWalls);
-                    drawTile(height, ramX, yHeight + (y * 16) + ((h + 1) * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
-                    tileIndex++;
-                }
-                for(var h = 0; h < chunkWalls[i]; h++){
-                    tileIndex++;
-                }
+                
+            }
+            
+            for(var h = 0; h < chunkWalls[i]; h++){
+                tileIndex++;
             }
             tileIndex++;
             i++;
