@@ -8,7 +8,7 @@ var contLayout = [false, false, false, false, false, false, false, false, false,
 var contLayoutDown = [false, false, false, false, false, false, false, false, false, false, false];
 var chunkHeights = [2,2,1,0,0,0,
                     3,2,1,0,3,0,
-                    2,2,1,1,0,0,
+                    2,2,1,1,2,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
@@ -58,6 +58,8 @@ var steps = 0;
 var playerX = 0;
 var playerY = 0;
 var playerZ = 2;
+var falling = 0;
+var playerAnalogZ = playerZ * 16;
 var mouseClicked = false;
 var rightMouseClicked = false;
 
@@ -74,24 +76,23 @@ setInterval(mainLoop, 1000/fps);
 display.style.width = (256 * displayScale).toString() + "px";
 
 function mainLoop(){
-    consoleClear();
+    //consoleClear();
     checkForInputs();
     ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,256,192);
     ctx.fillStyle = "#00ff00";
 
     if(playerControl){
-        if(contLayout[0]){
+        playerAnalogZ = playerZ * 16;
+        falling = 0;
+        if(contLayout[0] && checkForCollision(0, 1)){
             startWalking(0, speed);
-        }
-        if(contLayout[1]){
+        }else if(contLayout[1] && checkForCollision(1, 0)){
             startWalking(speed, 0);
-        }
-        if(contLayout[2]){
-            startWalking(0, 0 - speed);
-        }
-        if(contLayout[3]){
+        }else if(contLayout[3] && checkForCollision(-1, 0)){
             startWalking(0 - speed, 0);
+        }else if(contLayout[2] && checkForCollision(0, -1)){
+            startWalking(0, 0 - speed);
         }
     }
     if(moving){
@@ -102,10 +103,12 @@ function mainLoop(){
             moving = false;
             playerControl = true;
         }
+        playerAnalogZ -= falling;
 
     }
 
-
+    //consoleLog(playerX);
+    //consoleLog(playerY);
 
 
 
@@ -114,13 +117,11 @@ function mainLoop(){
         drawLayer(i, 0, 0);
     }
     drawPlayerBottom();
-    consoleLog("B");
     if(playerZ < chunkElevation){
         drawLayer(i, 0, 0);
         i++;
     }
     drawPlayerTop();
-    consoleLog("T");
     for(; i <= chunkElevation; i++){
         drawLayer(i, 0, 0);
     }
@@ -139,6 +140,21 @@ function mainLoop(){
     //consoleLog(chunkWalls);
 }
 
+function checkForCollision(x, y){
+    if(chunkHeights[playerY + (playerX * chunkHeight)] + 1 >= chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)] &&
+    playerX - x >= 0 &&
+    playerY - y >= 0 &&
+    playerX - x <= chunkWidth - 1 &&
+    playerY - y <= chunkHeight - 1){
+        falling = (chunkHeights[playerY + (playerX * chunkHeight)] - chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)]) * speed;
+        
+        return true;
+    }else{
+        
+        return false;
+    }
+}
+
 function startWalking(xSpeed, ySpeed){
     playerX -= xSpeed / speed;
     playerY -= ySpeed / speed;
@@ -151,21 +167,20 @@ function startWalking(xSpeed, ySpeed){
 }
 
 function drawLayer(height, xPos, yPos){
-    consoleLog(height);
     var i = 0;
     var tileIndex = 0;
-    var yHeight = yPos - (height * 16) + (playerZ * 16);
+    var yHeight = yPos - (height * 16) + playerAnalogZ;
     for(var x = 0; x < chunkWidth; x++){
         var ramX = xPos + (x * 16);
         for(var y = 0; y < chunkHeight; y++){
             if(chunkHeights[i] >= height && chunkHeights[i] - chunkWalls[i] < height){
-                drawTile(height, ramX, yHeight + (y * 16) + 16, chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
+                drawTile(height, ramX, yHeight + (y * 16) + 16, chunkTiles[tileIndex + (height - (chunkHeights[i] - chunkWalls[i]) - 1)].x, chunkTiles[tileIndex + (height - (chunkHeights[i] - chunkWalls[i]) - 1)].y);//draw walls
             }
             if(chunkHeights[i] == height){
                 for(var h = 0; h < chunkWalls[i]; h++){
                     tileIndex++;
                 }
-                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
+                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);//draw floor
             }else{
                 for(var h = 0; h < chunkWalls[i]; h++){
                     tileIndex++;
@@ -255,8 +270,8 @@ function generateTiles(){
     for(var x = 0; x < chunkWidth; x++){
         for(var y = 0; y < chunkHeight; y++){
             var index = y + (x * chunkHeight);
-            for(var h = 0; h < chunkWalls[index]; h++){
-                chunkTiles[i] = calculateWallTiles(index);
+            for(var h = chunkWalls[index]; h > 0; h--){
+                chunkTiles[i] = calculateWallTiles(index, h - 1);
                 i++;
             }
             chunkTiles[i] = calculateFloorTiles(index);
@@ -265,37 +280,52 @@ function generateTiles(){
     }
 }
 
-function calculateWallTiles(index){
-    if(chunkHeights[index + chunkHeight] >= chunkHeights[index]){
-        if(chunkHeights[index - chunkHeight] >= chunkHeights[index]){
-            return new Vector2(16, 48);
+function calculateWallTiles(index, height){
+    var x = 1;
+    var y = 3;
+    if(chunkHeights[index + chunkHeight] + height >= chunkHeights[index]){
+        if(chunkHeights[index - chunkHeight] + height >= chunkHeights[index]){
+            x = 1;
         }else{
-            return new Vector2(0, 48);
+            x = 0;
         }
     }else{
-        if(chunkHeights[index - chunkHeight] >= chunkHeights[index]){
-            return new Vector2(32, 48);
+        if(chunkHeights[index - chunkHeight] + height >= chunkHeights[index]){
+            x = 2;
         }else{
-            return new Vector2(48, 48);
+            x = 3;
         }
     }
+    if(chunkWalls[index] == 1){
+        y = 5
+    }else if(height == 0){
+        y = 2;
+    }else if(height == chunkWalls[index] - 1){
+        y = 4;
+    }
+    
+    
+    return new Vector2(x * 16, y * 16);
 }
 
 function calculateFloorTiles(index){
-    var x = 2;
-    var y = 2;
+    var x = 6;
+    var y = 3;
     if(chunkHeights[index + chunkHeight] < chunkHeights[index]){
         x++;
     }
     if(chunkHeights[index - chunkHeight] < chunkHeights[index]){
         x--;
-        if(x == 2){
-            y = 3;
+        if(x == 6){
+            y = 5;
         }
+    }
+    if(chunkHeights[index - 1] < chunkHeights[index]){
+        y--;
     }
 
 
-    return new Vector2((x + 4) * 16, (y + 1) * 16);
+    return new Vector2((x) * 16, (y) * 16);
 
 }
 
