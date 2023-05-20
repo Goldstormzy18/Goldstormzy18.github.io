@@ -6,7 +6,7 @@ var fps = 30;
 //wasd
 var contLayout = [false, false, false, false, false, false, false, false, false, false, false];
 var chunkHeights = [2,2,1,0,0,0,
-                    2,2,1,0,1,0,
+                    2,2,1,0,3,0,
                     2,2,1,1,0,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
@@ -71,8 +71,9 @@ function mainLoop(){
 
     drawLayer(0, 0, 0);
     drawLayer(1, 0, 0);
+    drawPlayerBottom();
     drawLayer(2, 0, 0);
-    drawPlayer();
+    drawPlayerTop();
     drawLayer(3, 0, 0);
     //drawLayer(2, 0, 0);
 
@@ -82,31 +83,26 @@ function mainLoop(){
 }
 
 function drawLayer(height, xPos, yPos){
+    consoleClear();
     var i = 0;
     var tileIndex = 0;
     var yHeight = yPos - (height * 16)
     for(var x = 0; x < chunkWidth; x++){
         var ramX = xPos + (x * 16);
-        if(chunkWalls[i] + chunkHeights[i] == height + 1){
-            consoleLog(height);
-            drawTile(height, ramX, yHeight + (y * 16) + ((height) * 16), 0, 16);
-            //tileIndex++;
-        }
         for(var y = 0; y < chunkHeight; y++){
-            if(chunkHeights[i] == height){
-                //for(var h = 0; h < chunkWalls[i]; h++){
-                //    consoleLog(chunkWalls);
-                //    drawTile(height, ramX, yHeight + (y * 16) + ((h + 1) * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
-                //    tileIndex++;
-                //}
-                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
-                consoleLog(height);
-            }else{
-                
+            if(chunkHeights[i] >= height && chunkHeights[i] - chunkWalls[i] < height){
+                drawTile(height, ramX, yHeight + (y * 16) + 16, chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
             }
-            
-            for(var h = 0; h < chunkWalls[i]; h++){
-                tileIndex++;
+            if(chunkHeights[i] == height){
+                for(var h = 0; h < chunkWalls[i]; h++){
+                    consoleLog(chunkWalls);
+                    tileIndex++;
+                }
+                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
+            }else{
+                for(var h = 0; h < chunkWalls[i]; h++){
+                    tileIndex++;
+                }
             }
             tileIndex++;
             i++;
@@ -117,8 +113,11 @@ function drawLayer(height, xPos, yPos){
 
 
 
-function drawPlayer(){
-    ctx.drawImage(playerSprite, 0, 0, 16, 32, 120, 80, 16, 32);
+function drawPlayerTop(){
+    ctx.drawImage(playerSprite, 0, 0, 16, 16, 120, 72, 16, 16);
+}
+function drawPlayerBottom(){
+    ctx.drawImage(playerSprite, 0, 16, 16, 16, 120, 88, 16, 16);
 }
 
 function drawTile(tile, xPos, yPos, xTile, yTile){
@@ -157,7 +156,13 @@ display.addEventListener("mouseup", function(event){
 
 
 function consoleLog(input){
+    document.getElementById("debug").innerHTML += input;
+}
+function consoleSet(input){
     document.getElementById("debug").innerHTML = input;
+}
+function consoleClear(input){
+    document.getElementById("debug").innerHTML = "";
 }
 
 
