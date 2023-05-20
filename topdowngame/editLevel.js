@@ -5,13 +5,14 @@ var speed = 4;
 var fps = 30;
 //wasd
 var contLayout = [false, false, false, false, false, false, false, false, false, false, false];
+var contLayoutDown = [false, false, false, false, false, false, false, false, false, false, false];
 var chunkHeights = [2,2,1,0,0,0,
-                    2,2,1,0,3,0,
+                    3,2,1,0,3,0,
                     2,2,1,1,0,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
-                    1,0,0,0,0,0,
+                    1,0,0,1,2,0,
                     0,0,0,0,0,0];
 var chunkTiles = [];
 var chunks = [];
@@ -23,6 +24,7 @@ var chunkHeight = 6;
 var animationTimer = 0;
 var editing = true;
 var editTile = "00";
+var chunkElevation = 3;
 
 var mouseDown = false;
 var rightMouseDown = false;
@@ -47,7 +49,7 @@ var ctx = display.getContext("2d");
 document.title = "hello world";
 
 var steps = 0;
-
+var playerZ = 0;
 var mouseClicked = false;
 var rightMouseClicked = false;
 
@@ -69,6 +71,15 @@ function mainLoop(){
     ctx.fillRect(0,0,256,192);
     ctx.fillStyle = "#00ff00";
 
+
+
+
+
+
+
+
+
+
     drawLayer(0, 0, 0);
     drawLayer(1, 0, 0);
     drawPlayerBottom();
@@ -83,10 +94,10 @@ function mainLoop(){
 }
 
 function drawLayer(height, xPos, yPos){
-    consoleClear();
+    //consoleClear();
     var i = 0;
     var tileIndex = 0;
-    var yHeight = yPos - (height * 16)
+    var yHeight = yPos - (height * 16) - (playerZ * 16);
     for(var x = 0; x < chunkWidth; x++){
         var ramX = xPos + (x * 16);
         for(var y = 0; y < chunkHeight; y++){
@@ -95,7 +106,6 @@ function drawLayer(height, xPos, yPos){
             }
             if(chunkHeights[i] == height){
                 for(var h = 0; h < chunkWalls[i]; h++){
-                    consoleLog(chunkWalls);
                     tileIndex++;
                 }
                 drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);
@@ -179,7 +189,7 @@ function generateTiles(){
     for(var x = 0; x < chunkWidth; x++){
         for(var y = 0; y < chunkHeight; y++){
             var index = y + (x * chunkHeight);
-            for(h = 0; h < chunkWalls[index]; h++){
+            for(var h = 0; h < chunkWalls[index]; h++){
                 chunkTiles[i] = calculateWallTiles(index);
                 i++;
             }
@@ -230,10 +240,10 @@ function generateWalls(){
             chunkWalls[y + (x * chunkHeight)] = chunkHeights[y + (x * chunkHeight)] + chunkHeights[y + (x * chunkHeight) + 1];
         }
     }
-    for(; i < chunkHeights.length - chunkWidth; i++){
+    for(; i < chunkHeights.length - 1; i++){
         chunkWalls[i] = chunkHeights[i] - chunkHeights[i + 1];
         if(chunkWalls[i] < 0){
-            chunkWalls[i] = 0;
+            //chunkWalls[i] = 0;
         }
     }
     for(; i < chunkHeights.length; i++){
@@ -261,38 +271,33 @@ function initListeners(){
     document.addEventListener('keydown', function(event){
         var name = event.key;
         var code = event.code;
-        if(name == "ArrowUp"){
-            contLayout[0] = true;
-        }
-        if(name == "ArrowLeft"){
-            contLayout[1] = true;
-        }
-        if(name == "ArrowDown"){
-            contLayout[2] = true;
-        }
-        if(name == "ArrowRight"){
-            contLayout[3] = true;
-        }
-        if(name == "w"){
-            contLayout[0] = true;
-        }
-        if(name == "a"){
-            contLayout[1] = true;
-        }
-        if(name == "s"){
-            contLayout[2] = true;
-        }
-        if(name == "d"){
-            contLayout[3] = true;
-        }
-        if(name == " "){
-            contLayout[4] = true;
-        }
-        if(name == "Shift"){
-            contLayout[5] = true;
-        }
-        if(name == "q"){
-            contLayout[10] = true;
+        switch(name){
+            case "ArrowUp":
+            case "w":
+                contLayout[0] = true;
+                break;
+            case "ArrowLeft":
+            case "a":
+                contLayout[1] = true;
+                break;
+            case "ArrowDown":
+            case "s":
+                contLayout[2] = true;
+                break;
+            case "ArrowRight":
+            case "d":
+                contLayout[3] = true;
+                break;
+            case " ":
+                contLayout[4] = true;
+                break;
+            case "Shift":
+                contLayout[5] = true;
+                break;
+            case "q":
+                contLayout[10] = true;
+                break;
+                
         }
       }, false);
       document.addEventListener('keyup', function(event){
