@@ -1,5 +1,5 @@
-var camX = 0;
-var camY = 0;
+var camX = 120;
+var camY = 88;
 var camHeight = 0;
 var speed = 4;
 var fps = 30;
@@ -12,16 +12,17 @@ var chunkHeights = [2,2,1,0,0,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
                     1,1,1,1,1,0,
-                    1,0,0,1,2,0,
+                    1,0,0,2,1,0,
                     0,0,0,0,0,0];
 var chunkTiles = [];
 var chunks = [];
 
 var chunkWalls = [];
 
+var animationWalkCycles = [0,1,0,2];
+
 var chunkWidth  = 8;
 var chunkHeight = 6;
-var animationTimer = 0;
 var editing = true;
 var editTile = "00";
 var chunkElevation = 3;
@@ -32,6 +33,11 @@ var rightMouseDown = false;
 var displayScale = 4;
 var mouseX = 0;
 var mouseY = 0;
+
+var playerControl = true;
+var moving = false;
+var movingDir = new Vector2(0,0);
+var animationTimer = 0;
 
 var currentTileset = 1;
 
@@ -49,7 +55,9 @@ var ctx = display.getContext("2d");
 document.title = "hello world";
 
 var steps = 0;
-var playerZ = 0;
+var playerX = 0;
+var playerY = 0;
+var playerZ = 2;
 var mouseClicked = false;
 var rightMouseClicked = false;
 
@@ -66,38 +74,87 @@ setInterval(mainLoop, 1000/fps);
 display.style.width = (256 * displayScale).toString() + "px";
 
 function mainLoop(){
+    consoleClear();
     checkForInputs();
     ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,256,192);
     ctx.fillStyle = "#00ff00";
 
+    if(playerControl){
+        if(contLayout[0]){
+            startWalking(0, speed);
+        }
+        if(contLayout[1]){
+            startWalking(speed, 0);
+        }
+        if(contLayout[2]){
+            startWalking(0, 0 - speed);
+        }
+        if(contLayout[3]){
+            startWalking(0 - speed, 0);
+        }
+    }
+    if(moving){
+        camX += movingDir.x;
+        camY += movingDir.y;
+        animationTimer++;
+        if(animationTimer == 16 / speed){
+            moving = false;
+            playerControl = true;
+        }
+
+    }
 
 
 
 
 
-
-
-
-
-    drawLayer(0, 0, 0);
-    drawLayer(1, 0, 0);
+    var i = 0;
+    for(; i <= playerZ && i <= chunkElevation; i++){
+        drawLayer(i, 0, 0);
+    }
     drawPlayerBottom();
-    drawLayer(2, 0, 0);
+    consoleLog("B");
+    if(playerZ < chunkElevation){
+        drawLayer(i, 0, 0);
+        i++;
+    }
     drawPlayerTop();
+    consoleLog("T");
+    for(; i <= chunkElevation; i++){
+        drawLayer(i, 0, 0);
+    }
+
+
+    /*drawLayer(0, 0, 0);
+    drawLayer(1, 0, 0);
+    drawLayer(2, 0, 0);
+    drawPlayerBottom();
     drawLayer(3, 0, 0);
-    //drawLayer(2, 0, 0);
+    drawPlayerTop();
+    //drawLayer(2, 0, 0);*/
 
     mouseClicked = false;
     rightMouseClicked = false;
     //consoleLog(chunkWalls);
 }
 
+function startWalking(xSpeed, ySpeed){
+    playerX -= xSpeed / speed;
+    playerY -= ySpeed / speed;
+    playerZ = chunkHeights[playerY + (playerX * chunkHeight)];
+    animationTimer = 0;
+    playerControl = false;
+    moving = true;
+    movingDir = new Vector2(xSpeed, ySpeed);
+    //consoleSet(playerZ);
+}
+
 function drawLayer(height, xPos, yPos){
-    //consoleClear();
+    consoleLog(height);
     var i = 0;
     var tileIndex = 0;
-    var yHeight = yPos - (height * 16) - (playerZ * 16);
+    var yHeight = yPos - (height * 16) + (playerZ * 16);
     for(var x = 0; x < chunkWidth; x++){
         var ramX = xPos + (x * 16);
         for(var y = 0; y < chunkHeight; y++){
@@ -179,9 +236,18 @@ function consoleClear(input){
 function generateChunk(){
     generateWalls();
     generateTiles();
+    generateChunkElevationValue();
 
 
+}
 
+function generateChunkElevationValue(){
+    chunkElevation = 0;
+    for(var i = 0; i < chunkHeights.length; i++){
+        if(chunkHeights[i] > chunkElevation){
+            chunkElevation = chunkHeights[i]
+        }
+    }
 }
 
 function generateTiles(){
@@ -253,7 +319,7 @@ function generateWalls(){
 
 
 function checkForInputs(){
-    if(contLayout[0]){
+    /*if(contLayout[0]){
         camY += speed;
     }
     if(contLayout[1]){
@@ -264,40 +330,73 @@ function checkForInputs(){
     }
     if(contLayout[3]){
         camX -= speed;
-    }
+    }*/
 }
 
 function initListeners(){
     document.addEventListener('keydown', function(event){
         var name = event.key;
         var code = event.code;
-        switch(name){
-            case "ArrowUp":
-            case "w":
-                contLayout[0] = true;
-                break;
-            case "ArrowLeft":
-            case "a":
-                contLayout[1] = true;
-                break;
-            case "ArrowDown":
-            case "s":
-                contLayout[2] = true;
-                break;
-            case "ArrowRight":
-            case "d":
-                contLayout[3] = true;
-                break;
-            case " ":
-                contLayout[4] = true;
-                break;
-            case "Shift":
-                contLayout[5] = true;
-                break;
-            case "q":
-                contLayout[10] = true;
-                break;
+        // switch(name){
+        //     case "ArrowUp":
+        //     case "w":
+        //         contLayout[0] = true;
+        //         break;
+        //     case "ArrowLeft":
+        //     case "a":
+        //         contLayout[1] = true;
+        //         break;
+        //     case "ArrowDown":
+        //     case "s":
+        //         contLayout[2] = true;
+        //         break;
+        //     case "ArrowRight":
+        //     case "d":
+        //         contLayout[3] = true;
+        //         break;
+        //     case " ":
+        //         contLayout[4] = true;
+        //         break;
+        //     case "Shift":
+        //         contLayout[5] = true;
+        //         break;
+        //     case "q":
+        //         contLayout[10] = true;
+        //         break;
                 
+        // }
+        if(name == "ArrowUp"){
+            contLayout[0] = true;
+        }
+        if(name == "ArrowLeft"){
+            contLayout[1] = true;
+        }
+        if(name == "ArrowDown"){
+            contLayout[2] = true;
+        }
+        if(name == "ArrowRight"){
+            contLayout[3] = true;
+        }
+        if(name == "w"){
+            contLayout[0] = true;
+        }
+        if(name == "a"){
+            contLayout[1] = true;
+        }
+        if(name == "s"){
+            contLayout[2] = true;
+        }
+        if(name == "d"){
+            contLayout[3] = true;
+        }
+        if(name == " "){
+            contLayout[4] = true;
+        }
+        if(name == "Shift"){
+            contLayout[5] = true;
+        }
+        if(name == "q"){
+            contLayout[10] = true;
         }
       }, false);
       document.addEventListener('keyup', function(event){
