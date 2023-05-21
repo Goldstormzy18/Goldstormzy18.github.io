@@ -6,18 +6,8 @@ var fps = 30;
 //wasd
 var contLayout = [false, false, false, false, false, false, false, false, false, false, false];
 var contLayoutDown = [false, false, false, false, false, false, false, false, false, false, false];
-var chunkHeights = [2,2,1,0,0,0,
-                    3,2,1,0,3,0,
-                    2,2,1,1,2,0,
-                    1,1,1,1,1,0,
-                    1,1,1,1,1,0,
-                    1,1,1,1,1,0,
-                    1,0,0,2,1,0,
-                    0,0,0,0,0,0];
-var chunkTiles = [];
-var chunks = [];
 
-var chunkWalls = [];
+var chunks = [];
 
 var animationWalkCycles = [0,1,0,2];
 
@@ -25,7 +15,6 @@ var chunkWidth  = 8;
 var chunkHeight = 6;
 var editing = true;
 var editTile = "00";
-var chunkElevation = 3;
 
 var mouseDown = false;
 var rightMouseDown = false;
@@ -46,9 +35,9 @@ playerSprite.src = "Assets/SamuelWalk.png";
 
 var tilesets = [];
 tilesets[0] = new Image();
-tilesets[0].src = "Assets/overworldTiles.png";
+tilesets[0].src = "Assets/grassTiles.png";
 tilesets[1] = new Image();
-tilesets[1].src = "Assets/testTiles.png";
+tilesets[1].src = "Assets/rockCliffTiles.png";
 
 var display = document.getElementById("display");
 var ctx = display.getContext("2d");
@@ -57,11 +46,13 @@ document.title = "hello world";
 var steps = 0;
 var playerX = 0;
 var playerY = 0;
-var playerZ = 2;
+var playerZ = 4;
 var falling = 0;
 var playerAnalogZ = playerZ * 16;
 var mouseClicked = false;
 var rightMouseClicked = false;
+
+var onChunk = 0;
 
 display.width  = 256;
 display.height = 192;
@@ -69,7 +60,7 @@ initListeners();
 
 ctx.fillRect(0,0,256,192);
 
-generateChunk();
+initChunks()
 
 setInterval(mainLoop, 1000/fps);
 
@@ -81,6 +72,7 @@ function mainLoop(){
     ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,256,192);
     ctx.fillStyle = "#00ff00";
+    onChunk = 0;
 
     if(playerControl){
         playerAnalogZ = playerZ * 16;
@@ -112,19 +104,7 @@ function mainLoop(){
 
 
 
-    var i = 0;
-    for(; i <= playerZ && i <= chunkElevation; i++){
-        drawLayer(i, 0, 0);
-    }
-    drawPlayerBottom();
-    if(playerZ < chunkElevation){
-        drawLayer(i, 0, 0);
-        i++;
-    }
-    drawPlayerTop();
-    for(; i <= chunkElevation; i++){
-        drawLayer(i, 0, 0);
-    }
+    drawChunks();
 
 
     /*drawLayer(0, 0, 0);
@@ -141,12 +121,12 @@ function mainLoop(){
 }
 
 function checkForCollision(x, y){
-    if(chunkHeights[playerY + (playerX * chunkHeight)] + 1 >= chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)] &&
+    if(chunks[onChunk].chunkHeights[playerY + (playerX * chunkHeight)] + 1 >= chunks[onChunk].chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)] &&
     playerX - x >= 0 &&
     playerY - y >= 0 &&
     playerX - x <= chunkWidth - 1 &&
     playerY - y <= chunkHeight - 1){
-        falling = (chunkHeights[playerY + (playerX * chunkHeight)] - chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)]) * speed;
+        falling = (chunks[onChunk].chunkHeights[playerY + (playerX * chunkHeight)] - chunks[onChunk].chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)]) * speed;
         
         return true;
     }else{
@@ -158,7 +138,7 @@ function checkForCollision(x, y){
 function startWalking(xSpeed, ySpeed){
     playerX -= xSpeed / speed;
     playerY -= ySpeed / speed;
-    playerZ = chunkHeights[playerY + (playerX * chunkHeight)];
+    playerZ = chunks[onChunk].chunkHeights[playerY + (playerX * chunkHeight)];
     animationTimer = 0;
     playerControl = false;
     moving = true;
@@ -169,20 +149,20 @@ function startWalking(xSpeed, ySpeed){
 function drawLayer(height, xPos, yPos){
     var i = 0;
     var tileIndex = 0;
-    var yHeight = yPos - (height * 16) + playerAnalogZ;
+    var yHeight = (yPos * 16 * chunkHeight) - (height * 16) + playerAnalogZ;
     for(var x = 0; x < chunkWidth; x++){
-        var ramX = xPos + (x * 16);
+        var ramX = (xPos * 16 * chunkWidth) + (x * 16);
         for(var y = 0; y < chunkHeight; y++){
-            if(chunkHeights[i] >= height && chunkHeights[i] - chunkWalls[i] < height){
-                drawTile(height, ramX, yHeight + (y * 16) + 16, chunkTiles[tileIndex + (height - (chunkHeights[i] - chunkWalls[i]) - 1)].x, chunkTiles[tileIndex + (height - (chunkHeights[i] - chunkWalls[i]) - 1)].y);//draw walls
+            if(chunks[onChunk].chunkHeights[i] >= height && chunks[onChunk].chunkHeights[i] - chunks[onChunk].chunkWalls[i] < height){
+                drawTile(chunks[onChunk].chunkPalette[i], height, ramX, yHeight + (y * 16) + 16, chunks[onChunk].chunkTiles[tileIndex + (height - (chunks[onChunk].chunkHeights[i] - chunks[onChunk].chunkWalls[i]) - 1)].x, chunks[onChunk].chunkTiles[tileIndex + (height - (chunks[onChunk].chunkHeights[i] - chunks[onChunk].chunkWalls[i]) - 1)].y);//draw walls
             }
-            if(chunkHeights[i] == height){
-                for(var h = 0; h < chunkWalls[i]; h++){
+            if(chunks[onChunk].chunkHeights[i] == height){
+                for(var h = 0; h < chunks[onChunk].chunkWalls[i]; h++){
                     tileIndex++;
                 }
-                drawTile(height, ramX, yHeight + (y * 16), chunkTiles[tileIndex].x, chunkTiles[tileIndex].y);//draw floor
+                drawTile(chunks[onChunk].chunkPalette[i], height, ramX, yHeight + (y * 16), chunks[onChunk].chunkTiles[tileIndex].x, chunks[onChunk].chunkTiles[tileIndex].y);//draw floor
             }else{
-                for(var h = 0; h < chunkWalls[i]; h++){
+                for(var h = 0; h < chunks[onChunk].chunkWalls[i]; h++){
                     tileIndex++;
                 }
             }
@@ -202,8 +182,8 @@ function drawPlayerBottom(){
     ctx.drawImage(playerSprite, 0, 16, 16, 16, 120, 88, 16, 16);
 }
 
-function drawTile(tile, xPos, yPos, xTile, yTile){
-    ctx.drawImage(tilesets[1], xTile, yTile, 16, 16, xPos + camX, yPos + camY + camHeight, 16, 16);
+function drawTile(palette, tile, xPos, yPos, xTile, yTile){
+    ctx.drawImage(tilesets[palette], xTile, yTile, 16, 16, xPos + camX, yPos + camY + camHeight, 16, 16);
 }
 
 
@@ -233,7 +213,33 @@ display.addEventListener("mouseup", function(event){
     }
 });
 
-
+function drawChunks(){
+    var i = 0;
+    onChunk = 0;
+    for(; i <= playerZ && i <= chunks[onChunk].chunkTop; i++){
+        for(; onChunk < chunks.length; onChunk++){
+            drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY);
+        }
+        onChunk = 0;
+    }
+    drawPlayerBottom();
+    onChunk = 0;
+    if(playerZ < chunks[onChunk].chunkTop){
+        for(; onChunk < chunks.length; onChunk++){
+            drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY)
+        };
+        i++;
+        onChunk = 0;
+    }
+    drawPlayerTop();
+    onChunk = 0;
+    for(; i <= chunks[onChunk].chunkTop; i++){
+        for(; onChunk < chunks.length; onChunk++){
+            drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY);
+        }
+        onChunk = 0;
+    }
+}
 
 
 
@@ -251,16 +257,14 @@ function consoleClear(input){
 function generateChunk(){
     generateWalls();
     generateTiles();
-    generateChunkElevationValue();
-
-
+    generateChunkTopValue();
 }
 
-function generateChunkElevationValue(){
-    chunkElevation = 0;
-    for(var i = 0; i < chunkHeights.length; i++){
-        if(chunkHeights[i] > chunkElevation){
-            chunkElevation = chunkHeights[i]
+function generateChunkTopValue(){
+    chunks[onChunk].chunkTop = 0;
+    for(var i = 0; i < chunks[onChunk].chunkHeights.length; i++){
+        if(chunks[onChunk].chunkHeights[i] > chunks[onChunk].chunkTop){
+            chunks[onChunk].chunkTop = chunks[onChunk].chunkHeights[i]
         }
     }
 }
@@ -270,11 +274,11 @@ function generateTiles(){
     for(var x = 0; x < chunkWidth; x++){
         for(var y = 0; y < chunkHeight; y++){
             var index = y + (x * chunkHeight);
-            for(var h = chunkWalls[index]; h > 0; h--){
-                chunkTiles[i] = calculateWallTiles(index, h - 1);
+            for(var h = chunks[onChunk].chunkWalls[index]; h > 0; h--){
+                chunks[onChunk].chunkTiles[i] = calculateWallTiles(index, h - 1);
                 i++;
             }
-            chunkTiles[i] = calculateFloorTiles(index);
+            chunks[onChunk].chunkTiles[i] = calculateFloorTiles(index);
             i++;
         }
     }
@@ -283,24 +287,27 @@ function generateTiles(){
 function calculateWallTiles(index, height){
     var x = 1;
     var y = 3;
-    if(chunkHeights[index + chunkHeight] + height >= chunkHeights[index]){
-        if(chunkHeights[index - chunkHeight] + height >= chunkHeights[index]){
-            x = 1;
+
+    if(index > chunkHeight && index < (chunkHeight * chunkWidth) - chunkHeight){
+        if(chunks[onChunk].chunkHeights[index + chunkHeight] + height >= chunks[onChunk].chunkHeights[index]){
+            if(chunks[onChunk].chunkHeights[index - chunkHeight] + height >= chunks[onChunk].chunkHeights[index]){
+                x = 1;
+            }else{
+                x = 0;
+            }
         }else{
-            x = 0;
-        }
-    }else{
-        if(chunkHeights[index - chunkHeight] + height >= chunkHeights[index]){
-            x = 2;
-        }else{
-            x = 3;
+            if(chunks[onChunk].chunkHeights[index - chunkHeight] + height >= chunks[onChunk].chunkHeights[index]){
+                x = 2;
+            }else{
+                x = 3;
+            }
         }
     }
-    if(chunkWalls[index] == 1){
+    if(chunks[onChunk].chunkWalls[index] == 1){
         y = 5
     }else if(height == 0){
         y = 2;
-    }else if(height == chunkWalls[index] - 1){
+    }else if(height == chunks[onChunk].chunkWalls[index] - 1){
         y = 4;
     }
     
@@ -311,16 +318,16 @@ function calculateWallTiles(index, height){
 function calculateFloorTiles(index){
     var x = 6;
     var y = 3;
-    if(chunkHeights[index + chunkHeight] < chunkHeights[index]){
+    if(chunks[onChunk].chunkHeights[index + chunkHeight] < chunks[onChunk].chunkHeights[index]){
         x++;
     }
-    if(chunkHeights[index - chunkHeight] < chunkHeights[index]){
+    if(chunks[onChunk].chunkHeights[index - chunkHeight] < chunks[onChunk].chunkHeights[index]){
         x--;
         if(x == 6){
             y = 5;
         }
     }
-    if(chunkHeights[index - 1] < chunkHeights[index]){
+    if(chunks[onChunk].chunkHeights[index - 1] < chunks[onChunk].chunkHeights[index] && index % 6 != 0){
         y--;
     }
 
@@ -333,17 +340,17 @@ function generateWalls(){
     var i = 0;
     for(var y = 0; y < chunkHeight; y++){
         for(var x = 0; x < chunkWidth - 1; x++){
-            chunkWalls[y + (x * chunkHeight)] = chunkHeights[y + (x * chunkHeight)] + chunkHeights[y + (x * chunkHeight) + 1];
+            chunks[onChunk].chunkWalls[y + (x * chunkHeight)] = chunks[onChunk].chunkHeights[y + (x * chunkHeight)] + chunks[onChunk].chunkHeights[y + (x * chunkHeight) + 1];
         }
     }
-    for(; i < chunkHeights.length - 1; i++){
-        chunkWalls[i] = chunkHeights[i] - chunkHeights[i + 1];
-        if(chunkWalls[i] < 0){
+    for(; i < chunks[onChunk].chunkHeights.length - 1; i++){
+        chunks[onChunk].chunkWalls[i] = chunks[onChunk].chunkHeights[i] - chunks[onChunk].chunkHeights[i + 1];
+        if(chunks[onChunk].chunkWalls[i] < 0){
             //chunkWalls[i] = 0;
         }
     }
-    for(; i < chunkHeights.length; i++){
-        chunkWalls[i] = 0;
+    for(; i < chunks[onChunk].chunkHeights.length; i++){
+        chunks[onChunk].chunkWalls[i] = 0;
     }
 }
 
@@ -468,9 +475,93 @@ function initListeners(){
       }, false);
 }
 
+function initChunks(){
+    chunks[0] = new Chunk();
+    chunks[0].chunkHeights = [4,4,4,4,5,0,
+                              4,4,5,5,5,0,
+                              4,4,3,2,1,0,
+                              4,4,3,2,1,0,
+                              4,4,3,2,1,0,
+                              4,4,3,2,1,0,
+                              4,4,5,5,5,0,
+                              4,4,4,4,5,0];
+    chunks[0].chunkPalette = [0,0,0,0,1,0,
+                              0,0,1,1,1,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,1,1,1,0,
+                              0,0,0,0,1,0];
+    chunks[0].chunkX = 0;
+    chunks[0].chunkY = 0;
+    chunks[0].chunkTop = 0;
+    chunks[0].chunkBottom = 0;
+    onChunk = 0;
+    generateChunk();
+    
+    chunks[1] = new Chunk();
+    chunks[1].chunkHeights = [4,4,4,4,4,4,
+                              4,4,4,5,4,4,
+                              4,4,4,5,4,4,
+                              4,4,4,5,4,4,
+                              4,4,4,5,4,4,
+                              4,4,4,5,4,4,
+                              4,4,4,4,4,4,
+                              4,4,4,4,4,4];
+    chunks[1].chunkPalette = [0,0,0,0,0,0,
+                              0,0,0,1,0,0,
+                              0,0,0,1,0,0,
+                              0,0,0,1,0,0,
+                              0,0,0,1,0,0,
+                              0,0,0,1,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0];
+    chunks[1].chunkX = 0;
+    chunks[1].chunkY = -1;
+    chunks[1].chunkTop = 0;
+    chunks[1].chunkBottom = 0;
+    onChunk = 1;
+    generateChunk();
+
+    chunks[2] = new Chunk();
+    chunks[2].chunkHeights = [4,4,4,4,5,0,
+                              4,4,4,4,5,0,
+                              4,4,4,4,5,0,
+                              4,4,4,4,3,0,
+                              4,4,4,4,3,0,
+                              4,4,4,4,5,0,
+                              4,4,4,4,5,0,
+                              4,4,4,4,5,0];
+    chunks[2].chunkPalette = [0,0,0,0,1,0,
+                              0,0,0,0,1,0,
+                              0,0,0,0,1,0,
+                              0,0,0,0,1,0,
+                              0,0,0,0,1,0,
+                              0,0,0,0,1,0,
+                              0,0,0,0,1,0,
+                              0,0,0,0,1,0];
+    chunks[2].chunkX = 1;
+    chunks[2].chunkY = 0;
+    chunks[2].chunkTop = 0;
+    chunks[2].chunkBottom = 0;
+    onChunk = 2;
+    generateChunk();
+    
+}
 
 
 
+function Chunk(){
+    this.chunkHeights = [];
+    this.chunkPalette = [];
+    this.chunkTiles = [];
+    this.chunkWalls = [];
+    var chunkX = 0;
+    var chunkY = 0;
+    var chunkTop = 0;
+    var chunkBottom = 0;
+}
 function Vector2(x, y) {
     this.x = x;
     this.y = y;
