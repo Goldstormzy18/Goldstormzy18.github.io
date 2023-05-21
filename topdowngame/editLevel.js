@@ -216,7 +216,7 @@ display.addEventListener("mouseup", function(event){
 function drawChunks(){
     var i = 0;
     onChunk = 0;
-    for(; i <= playerZ && i <= chunks[onChunk].chunkTop; i++){
+    for(; i <= playerZ && i <= chunks[1].chunkTop; i++){
         for(; onChunk < chunks.length; onChunk++){
             drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY);
         }
@@ -224,7 +224,7 @@ function drawChunks(){
     }
     drawPlayerBottom();
     onChunk = 0;
-    if(playerZ < chunks[onChunk].chunkTop){
+    if(playerZ < chunks[1].chunkTop){
         for(; onChunk < chunks.length; onChunk++){
             drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY)
         };
@@ -233,7 +233,7 @@ function drawChunks(){
     }
     drawPlayerTop();
     onChunk = 0;
-    for(; i <= chunks[onChunk].chunkTop; i++){
+    for(; i <= chunks[1].chunkTop; i++){
         for(; onChunk < chunks.length; onChunk++){
             drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY);
         }
@@ -504,19 +504,19 @@ function initChunks(){
     chunks[1].chunkHeights = [4,4,4,4,4,4,
                               4,4,4,5,4,4,
                               4,4,4,5,4,4,
-                              4,4,4,5,4,4,
-                              4,4,4,5,4,4,
-                              4,4,4,5,4,4,
-                              4,4,4,4,4,4,
-                              4,4,4,4,4,4];
+                              4,4,6,5,4,4,
+                              4,4,6,5,4,4,
+                              4,4,6,6,4,4,
+                              4,4,6,6,4,4,
+                              4,4,6,6,4,4];
     chunks[1].chunkPalette = [0,0,0,0,0,0,
                               0,0,0,1,0,0,
                               0,0,0,1,0,0,
-                              0,0,0,1,0,0,
-                              0,0,0,1,0,0,
-                              0,0,0,1,0,0,
-                              0,0,0,0,0,0,
-                              0,0,0,0,0,0];
+                              0,0,1,1,0,0,
+                              0,0,1,1,0,0,
+                              0,0,1,1,0,0,
+                              0,0,1,1,0,0,
+                              0,0,1,1,0,0];
     chunks[1].chunkX = 0;
     chunks[1].chunkY = -1;
     chunks[1].chunkTop = 0;
@@ -527,10 +527,10 @@ function initChunks(){
     chunks[2] = new Chunk();
     chunks[2].chunkHeights = [4,4,4,4,5,0,
                               4,4,4,4,5,0,
-                              4,4,4,4,5,0,
+                              4,4,4,4,4,0,
                               4,4,4,4,3,0,
                               4,4,4,4,3,0,
-                              4,4,4,4,5,0,
+                              4,4,4,4,4,0,
                               4,4,4,4,5,0,
                               4,4,4,4,5,0];
     chunks[2].chunkPalette = [0,0,0,0,1,0,
