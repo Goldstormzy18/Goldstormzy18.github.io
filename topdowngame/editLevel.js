@@ -23,6 +23,11 @@ var displayScale = 4;
 var mouseX = 0;
 var mouseY = 0;
 
+var renderWidth = 2;
+var renderHeight = 2;
+var edgeFallingImmunity = false;
+
+
 var playerControl = true;
 var moving = false;
 var movingDir = new Vector2(0,0);
@@ -48,6 +53,8 @@ var playerX = 0;
 var playerY = 0;
 var playerZ = 4;
 var falling = 0;
+var playerChunkX = 0;
+var playerChunkY = 1;
 var playerAnalogZ = playerZ * 16;
 var mouseClicked = false;
 var rightMouseClicked = false;
@@ -72,7 +79,7 @@ function mainLoop(){
     ctx.fillStyle = "#000000";
     ctx.fillRect(0,0,256,192);
     ctx.fillStyle = "#00ff00";
-    onChunk = 0;
+    onChunk = playerChunkY + (playerChunkX * renderHeight);
 
     if(playerControl){
         playerAnalogZ = playerZ * 16;
@@ -121,16 +128,25 @@ function mainLoop(){
 }
 
 function checkForCollision(x, y){
-    if(chunks[onChunk].chunkHeights[playerY + (playerX * chunkHeight)] + 1 >= chunks[onChunk].chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)] &&
-    playerX - x >= 0 &&
-    playerY - y >= 0 &&
-    playerX - x <= chunkWidth - 1 &&
-    playerY - y <= chunkHeight - 1){
-        falling = (chunks[onChunk].chunkHeights[playerY + (playerX * chunkHeight)] - chunks[onChunk].chunkHeights[(playerY - y) + ((playerX - x) * chunkHeight)]) * speed;
+    consoleLog(chunks[onChunk].chunkX);
+    consoleLog(",");
+    consoleLog(chunks[onChunk].chunkY);
+    consoleLog(";");
+    if((playerX % chunkWidth) - x < 0 ||
+       (playerY % chunkHeight) - y < 0 ||
+       (playerX % chunkWidth) - x > chunkWidth - 1 ||
+       (playerY % chunkHeight) - y > chunkHeight - 1){
         
+        playerChunkX -= x;
+        playerChunkY += y;
+        edgeFallingImmunity = true;
+        //onChunk = playerChunkY + (playerChunkX * 2);
+        return true;
+    }
+    if(chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)] + 1 >= chunks[onChunk].chunkHeights[((playerY % chunkHeight) - y) + (((playerX % chunkWidth) - x) * chunkHeight)]){
+        falling = (chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)] - chunks[onChunk].chunkHeights[((playerY % chunkHeight) - y) + (((playerX % chunkWidth) - x) * chunkHeight)]) * speed;
         return true;
     }else{
-        
         return false;
     }
 }
@@ -138,7 +154,11 @@ function checkForCollision(x, y){
 function startWalking(xSpeed, ySpeed){
     playerX -= xSpeed / speed;
     playerY -= ySpeed / speed;
-    playerZ = chunks[onChunk].chunkHeights[playerY + (playerX * chunkHeight)];
+    if(edgeFallingImmunity){
+        edgeFallingImmunity = false;
+    }else{
+        playerZ = chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)];
+    }
     animationTimer = 0;
     playerControl = false;
     moving = true;
@@ -494,7 +514,7 @@ function initChunks(){
                               0,0,1,1,1,0,
                               0,0,0,0,1,0];
     chunks[0].chunkX = 0;
-    chunks[0].chunkY = 0;
+    chunks[0].chunkY = 1;
     chunks[0].chunkTop = 0;
     chunks[0].chunkBottom = 0;
     onChunk = 0;
@@ -518,7 +538,7 @@ function initChunks(){
                               0,0,1,1,0,0,
                               0,0,1,1,0,0];
     chunks[1].chunkX = 0;
-    chunks[1].chunkY = -1;
+    chunks[1].chunkY = 0;
     chunks[1].chunkTop = 0;
     chunks[1].chunkBottom = 0;
     onChunk = 1;
@@ -542,10 +562,34 @@ function initChunks(){
                               0,0,0,0,1,0,
                               0,0,0,0,1,0];
     chunks[2].chunkX = 1;
-    chunks[2].chunkY = 0;
+    chunks[2].chunkY = 1;
     chunks[2].chunkTop = 0;
     chunks[2].chunkBottom = 0;
     onChunk = 2;
+    generateChunk();
+
+    chunks[3] = new Chunk();
+    chunks[3].chunkHeights = [4,4,6,6,4,4,
+                              4,4,6,6,6,4,
+                              4,4,6,6,6,4,
+                              4,4,4,5,5,4,
+                              4,4,4,4,4,4,
+                              4,4,4,4,4,4,
+                              4,4,4,4,4,4,
+                              4,4,4,4,4,4];
+    chunks[3].chunkPalette = [0,0,1,1,0,0,
+                              0,0,1,1,1,0,
+                              0,0,1,1,1,0,
+                              0,0,0,1,1,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0];
+    chunks[3].chunkX = 1;
+    chunks[3].chunkY = 0;
+    chunks[3].chunkTop = 0;
+    chunks[3].chunkBottom = 0;
+    onChunk = 3;
     generateChunk();
     
 }
