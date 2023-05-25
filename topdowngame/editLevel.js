@@ -88,6 +88,8 @@ ctx.fillRect(0,0,256,192);
 
 initChunks()
 
+
+
 setInterval(mainLoop, 1000/fps);
 
 display.style.width = (256 * displayScale).toString() + "px";
@@ -225,10 +227,10 @@ function drawLayer(height, xPos, yPos){
 
 
 function drawPlayerTop(){
-    ctx.drawImage(characters[0], 0, 0, 16, 16, 120, 72, 16, 16);
+    ctx.drawImage(characters[0], animationWalkCycles[animationTimer - 1] * 16, 0, 16, 16, 120, 72, 16, 16);
 }
 function drawPlayerBottom(){
-    ctx.drawImage(characters[0], 0, 16, 16, 16, 120, 88, 16, 16);
+    ctx.drawImage(characters[0], animationWalkCycles[animationTimer - 1] * 16, 16, 16, 16, 120, 88, 16, 16);
 }
 
 function drawTile(palette, tile, xPos, yPos, xTile, yTile){
