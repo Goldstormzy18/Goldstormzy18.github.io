@@ -35,8 +35,25 @@ var animationTimer = 0;
 
 var currentTileset = 1;
 
-var playerSprite = new Image();
-playerSprite.src = "Assets/SamuelWalk.png";
+var entities = [];
+entities[0] = new Entity();
+entities[0].x = 3;
+entities[0].y = 1;
+entities[0].z = 6;
+entities[0].sprite = 1;
+entities[1] = new Entity();
+entities[1].x = 13;
+entities[1].y = 11;
+entities[1].z = 4;
+entities[1].sprite = 2;
+
+var characters = []
+characters[0] = new Image();
+characters[0].src = "Assets/SamuelWalk.png";
+characters[1] = new Image();
+characters[1].src = "Assets/DoctorWalk.png";
+characters[2] = new Image();
+characters[2].src = "Assets/NPCWalk1.png";
 
 var tilesets = [];
 tilesets[0] = new Image();
@@ -53,7 +70,7 @@ document.title = "hello world";
 var steps = 0;
 var playerX = 2;
 var playerY = 2;
-var playerZ = 4;
+var playerZ = 6;
 var falling = 0;
 var playerChunkX = 0;
 var playerChunkY = 2;
@@ -86,13 +103,13 @@ function mainLoop(){
     if(playerControl){
         playerAnalogZ = playerZ * 16;
         falling = 0;
-        if(contLayout[0] && checkForCollision(0, 1)){
+        if(contLayout[0] && checkForCollision(0, 1) && checkForEntityCollision(0, 1)){
             startWalking(0, speed);
-        }else if(contLayout[1] && checkForCollision(1, 0)){
+        }else if(contLayout[1] && checkForCollision(1, 0) && checkForEntityCollision(1, 0)){
             startWalking(speed, 0);
-        }else if(contLayout[3] && checkForCollision(-1, 0)){
+        }else if(contLayout[3] && checkForCollision(-1, 0) && checkForEntityCollision(-1, 0)){
             startWalking(0 - speed, 0);
-        }else if(contLayout[2] && checkForCollision(0, -1)){
+        }else if(contLayout[2] && checkForCollision(0, -1) && checkForEntityCollision(0, -1)){
             startWalking(0, 0 - speed);
         }
     }
@@ -129,19 +146,29 @@ function mainLoop(){
     //consoleLog(chunkWalls);
 }
 
+function checkForEntityCollision(x, y){
+    if(edgeFallingImmunity){
+        return true;
+    }
+    for(var i = 0; i < entities.length; i++){
+        if(playerX - x == entities[i].x && playerY - y == entities[i].y){
+            return false;
+        }
+    }
+    return true;
+}
+
 function checkForCollision(x, y){
-    consoleLog(chunks[onChunk].chunkX);
-    consoleLog(",");
-    consoleLog(chunks[onChunk].chunkY);
-    consoleLog(";");
     if((playerX % chunkWidth) - x < 0 ||
        (playerY % chunkHeight) - y < 0 ||
        (playerX % chunkWidth) - x > chunkWidth - 1 ||
        (playerY % chunkHeight) - y > chunkHeight - 1){
         
-        playerChunkX -= x;
-        playerChunkY += y;
-        edgeFallingImmunity = true;
+        if(checkForEntityCollision(x, y)){
+            playerChunkX -= x;
+            playerChunkY += y;
+            edgeFallingImmunity = true;
+        }
         //onChunk = playerChunkY + (playerChunkX * 2);
         return true;
     }
@@ -198,10 +225,10 @@ function drawLayer(height, xPos, yPos){
 
 
 function drawPlayerTop(){
-    ctx.drawImage(playerSprite, 0, 0, 16, 16, 120, 72, 16, 16);
+    ctx.drawImage(characters[0], 0, 0, 16, 16, 120, 72, 16, 16);
 }
 function drawPlayerBottom(){
-    ctx.drawImage(playerSprite, 0, 16, 16, 16, 120, 88, 16, 16);
+    ctx.drawImage(characters[0], 0, 16, 16, 16, 120, 88, 16, 16);
 }
 
 function drawTile(palette, tile, xPos, yPos, xTile, yTile){
@@ -235,30 +262,40 @@ display.addEventListener("mouseup", function(event){
     }
 });
 
+function drawEntities(index){
+    
+    if(index == playerZ){
+        drawPlayerBottom();
+    }
+    if(index == playerZ + 1){
+        drawPlayerTop();
+    }
+    for(var i = 0; i < entities.length; i++){
+        if(index == entities[i].z){
+            drawEntityBottom(i);
+        }
+        if(index == entities[i].z + 1){
+            drawEntityTop(i);
+        }
+    }
+
+}
+
+function drawEntityTop(index){
+    ctx.drawImage(characters[entities[index].sprite], 0, 0, 16, 16, camX + (entities[index].x * 16), camY + playerAnalogZ - 16 + (entities[index].y * 16) - (entities[index].z * 16), 16, 16);
+}
+
+function drawEntityBottom(index){
+    ctx.drawImage(characters[entities[index].sprite], 0, 16, 16, 16, camX + (entities[index].x * 16), camY + playerAnalogZ + (entities[index].y * 16) - (entities[index].z * 16), 16, 16);
+}
+
 function drawChunks(){
-    var i = 0;
     onChunk = 0;
-    for(; i <= playerZ && i <= chunks[4].chunkTop; i++){
+    for(var i = 0; i <= chunks[4].chunkTop + 1; i++){
         for(; onChunk < chunks.length; onChunk++){
             drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY);
         }
-        onChunk = 0;
-    }
-    drawPlayerBottom();
-    onChunk = 0;
-    if(playerZ < chunks[4].chunkTop){
-        for(; onChunk < chunks.length; onChunk++){
-            drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY)
-        };
-        i++;
-        onChunk = 0;
-    }
-    drawPlayerTop();
-    onChunk = 0;
-    for(; i <= chunks[4].chunkTop; i++){
-        for(; onChunk < chunks.length; onChunk++){
-            drawLayer(i, chunks[onChunk].chunkX, chunks[onChunk].chunkY);
-        }
+        drawEntities(i);
         onChunk = 0;
     }
 }
@@ -720,7 +757,12 @@ function initChunks(){
 }
 
 
-
+function Entity(){
+    this.x = 0;
+    this.y = 0;
+    this.z = 0;
+    this.sprite = 0;
+}
 function Chunk(){
     this.chunkHeights = [];
     this.chunkPalette = [];
