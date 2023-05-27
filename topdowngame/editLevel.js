@@ -7,6 +7,15 @@ var fps = 30;
 var contLayout = [false, false, false, false, false, false, false, false, false, false, false];
 var contLayoutDown = [false, false, false, false, false, false, false, false, false, false, false];
 
+var letters = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"];
+
+var xDown = false;
+var talking = false;
+var onDialogue = 0;
+
+var font = new Image();
+font.src = "Assets/font.png";
+
 var chunks = [];
 
 var animationWalkCycles = [0,1,0,2];
@@ -16,8 +25,16 @@ var chunkHeight = 6;
 var editing = true;
 var editTile = "00";
 
+var facingCostumeX = 0;
+var facingCostumeY = 0;
+
+var facingX = 0;
+var facingY = 0;
+
 var mouseDown = false;
 var rightMouseDown = false;
+
+var whiteBackground = 0;
 
 var displayScale = 4;
 var mouseX = 0;
@@ -46,6 +63,14 @@ entities[1].x = 13;
 entities[1].y = 11;
 entities[1].z = 4;
 entities[1].sprite = 2;
+
+var dialogues = ["if you need healing       come to me", "queen victoria made       the super punch"];
+
+var stills = []
+stills[0] = new Image();
+stills[0].src = "Assets/DoctorHealStill.png";
+stills[1] = new Image();
+stills[1].src = "Assets/VictoriaStill.png";
 
 var characters = []
 characters[0] = new Image();
@@ -113,19 +138,23 @@ function mainLoop(){
             startWalking(0 - speed, 0);
         }else if(contLayout[2] && checkForCollision(0, -1) && checkForEntityCollision(0, -1)){
             startWalking(0, 0 - speed);
+        }else{
+            animationTimer = 0;
         }
     }
     if(moving){
         camX += movingDir.x;
         camY += movingDir.y;
         animationTimer++;
-        if(animationTimer == 16 / speed){
+        if(animationTimer % speed == 0){
             moving = false;
             playerControl = true;
         }
         playerAnalogZ -= falling;
 
     }
+
+    
 
     //consoleLog(playerX);
     //consoleLog(playerY);
@@ -146,6 +175,58 @@ function mainLoop(){
     mouseClicked = false;
     rightMouseClicked = false;
     //consoleLog(chunkWalls);
+
+    if(checkForNPCInteraction()){
+        drawActionBackground();
+    }else{
+        whiteBackground = 0;
+    }
+
+
+    xDown = false;
+}
+
+function checkForNPCInteraction(){
+    for(var i = 0; i < entities.length; i++){
+        if(entities[i].x == playerX + facingX && entities[i].y == playerY + facingY && entities[i].z == playerZ && (xDown || talking)){
+            talking = true;
+            onDialogue = i;
+            return true;
+        }
+    }
+    talking = false;
+    return false;
+}
+
+function drawActionBackground(){
+    if(whiteBackground < 192){
+        whiteBackground += 16;
+    }
+    ctx.fillStyle = "#ffffff";
+    ctx.moveTo(256, 0);
+    ctx.beginPath();
+    ctx.moveTo(256, 192 - whiteBackground);
+    ctx.lineTo(200, 192 - whiteBackground);
+    ctx.lineTo(100, 192);
+    ctx.lineTo(256, 192);
+    ctx.closePath();
+    ctx.fill();
+    ctx.drawImage(stills[onDialogue], 0, 0, 256, 192, 192 - whiteBackground, 0, 256, 192);
+    ctx.fillStyle = "#00000080";
+    ctx.beginPath();
+    ctx.rect(8, 154, 240, 32);
+    ctx.closePath();
+    ctx.fill();
+    drawText();
+
+}
+
+function drawText(){
+    for(var i = 0; i < dialogues[onDialogue].length; i++){
+        if(dialogues[onDialogue].substring(i, i + 1) != " "){
+            ctx.drawImage(font, letters.indexOf(dialogues[onDialogue].substring(i, i + 1)) * 8, 0, 8, 8, 12 + ((i % 26) * 9), 158 + (Math.floor(i / 26) * 12), 8, 8);
+        }
+    }
 }
 
 function checkForEntityCollision(x, y){
@@ -161,6 +242,19 @@ function checkForEntityCollision(x, y){
 }
 
 function checkForCollision(x, y){
+
+    facingCostumeY = 0;
+    facingCostumeX = 0;
+
+    facingX = 0 - x;
+    facingY = 0 - y;
+
+    facingCostumeX = Math.abs(x);
+    if(y == 1 || x == 1){
+        facingCostumeY = 1;
+    }
+    
+        
     if((playerX % chunkWidth) - x < 0 ||
        (playerY % chunkHeight) - y < 0 ||
        (playerX % chunkWidth) - x > chunkWidth - 1 ||
@@ -190,7 +284,6 @@ function startWalking(xSpeed, ySpeed){
     }else{
         playerZ = chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)];
     }
-    animationTimer = 0;
     playerControl = false;
     moving = true;
     movingDir = new Vector2(xSpeed, ySpeed);
@@ -227,10 +320,10 @@ function drawLayer(height, xPos, yPos){
 
 
 function drawPlayerTop(){
-    ctx.drawImage(characters[0], animationWalkCycles[animationTimer - 1] * 16, 0, 16, 16, 120, 72, 16, 16);
+    ctx.drawImage(characters[0], (animationWalkCycles[Math.floor(animationTimer / 4) % 4] * 16) + (48 * facingCostumeX), (32 * facingCostumeY), 16, 16, 120, 72, 16, 16);
 }
 function drawPlayerBottom(){
-    ctx.drawImage(characters[0], animationWalkCycles[animationTimer - 1] * 16, 16, 16, 16, 120, 88, 16, 16);
+    ctx.drawImage(characters[0], (animationWalkCycles[Math.floor(animationTimer / 4) % 4] * 16) + (48 * facingCostumeX), 16 + (32 * facingCostumeY), 16, 16, 120, 88, 16, 16);
 }
 
 function drawTile(palette, tile, xPos, yPos, xTile, yTile){
@@ -496,6 +589,13 @@ function initListeners(){
         if(name == "Shift"){
             contLayout[5] = true;
         }
+        if(name == "z"){
+            contLayout[6] = true;
+        }
+        if(name == "x"){
+            contLayout[7] = true;
+            xDown = true;
+        }
         if(name == "q"){
             contLayout[10] = true;
         }
@@ -532,6 +632,12 @@ function initListeners(){
         }
         if(name == "Shift"){
             contLayout[5] = false;
+        }
+        if(name == "z"){
+            contLayout[6] = false;
+        }
+        if(name == "x"){
+            contLayout[7] = false;
         }
         if(name == "q"){
             contLayout[10] = false;
