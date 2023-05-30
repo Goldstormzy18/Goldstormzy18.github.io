@@ -40,7 +40,7 @@ var displayScale = 4;
 var mouseX = 0;
 var mouseY = 0;
 
-var renderWidth = 3;
+var renderWidth = 4;
 var renderHeight = 3;
 var edgeFallingImmunity = false;
 
@@ -832,8 +832,8 @@ function initChunks(){
                               5,4,4,4,4,4,
                               5,4,4,4,4,4,
                               5,4,4,4,4,4,
-                              5,5,5,5,5,5,
-                              0,0,0,0,0,0];
+                              5,4,4,4,4,5,
+                              0,4,4,4,4,0];
     chunks[7].chunkPalette = [0,0,1,1,0,0,
                               1,1,1,1,1,0,
                               1,1,1,1,1,0,
@@ -841,7 +841,7 @@ function initChunks(){
                               1,0,0,0,0,0,
                               1,0,0,0,0,0,
                               1,1,1,1,1,1,
-                              0,0,0,0,0,0];
+                              0,1,1,1,1,0];
     chunks[7].chunkX = 2;
     chunks[7].chunkY = 1;
     chunks[7].chunkTop = 0;
@@ -871,6 +871,78 @@ function initChunks(){
     chunks[8].chunkTop = 0;
     chunks[8].chunkBottom = 0;
     onChunk = 8;
+    generateChunk();
+
+    chunks[9] = new Chunk();
+    chunks[9].chunkHeights = [0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              2,2,2,2,2,2,
+                              2,2,2,2,2,2];
+    chunks[9].chunkPalette = [0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              0,0,0,0,0,0,
+                              1,1,1,1,1,1,
+                              0,0,0,0,0,0];
+    chunks[9].chunkX = 3;
+    chunks[9].chunkY = 2;
+    chunks[9].chunkTop = 0;
+    chunks[9].chunkBottom = 0;
+    onChunk = 9;
+    generateChunk();
+
+    chunks[10] = new Chunk();
+    chunks[10].chunkHeights = [0,4,4,4,4,0,
+                               0,4,4,4,4,0,
+                               0,3,3,3,3,0,
+                               0,3,3,3,3,0,
+                               0,2,2,2,2,0,
+                               0,2,2,2,2,0,
+                               2,2,2,2,2,2,
+                               2,2,2,2,2,2];
+    chunks[10].chunkPalette = [0,1,1,1,1,0,
+                               0,1,1,1,1,0,
+                               0,1,1,1,1,0,
+                               0,1,1,1,1,0,
+                               0,1,1,1,1,0,
+                               0,1,1,1,1,0,
+                               1,1,1,1,1,1,
+                               0,0,0,0,0,0];
+    chunks[10].chunkX = 3;
+    chunks[10].chunkY = 1;
+    chunks[10].chunkTop = 0;
+    chunks[10].chunkBottom = 0;
+    onChunk = 10;
+    generateChunk();
+
+    chunks[11] = new Chunk();
+    chunks[11].chunkHeights = [0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               2,2,2,2,2,2,
+                               2,2,2,2,2,2];
+    chunks[11].chunkPalette = [0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               0,0,0,0,0,0,
+                               1,1,1,1,1,1,
+                               0,0,0,0,0,0];
+    chunks[11].chunkX = 3;
+    chunks[11].chunkY = 0;
+    chunks[11].chunkTop = 0;
+    chunks[11].chunkBottom = 0;
+    onChunk = 11;
     generateChunk();
     
 }
