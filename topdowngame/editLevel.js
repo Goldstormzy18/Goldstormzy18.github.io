@@ -90,7 +90,7 @@ tilesets[2].src = "Assets/plants.png";
 
 var display = document.getElementById("display");
 var ctx = display.getContext("2d");
-document.title = "hello world";
+document.title = "The Great Conquest";
 
 var steps = 0;
 var playerX = 2;
