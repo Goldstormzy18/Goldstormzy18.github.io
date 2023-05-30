@@ -102,6 +102,7 @@ var playerChunkY = 2;
 var playerAnalogZ = playerZ * 16;
 var mouseClicked = false;
 var rightMouseClicked = false;
+var fallingFront = false;
 
 var onChunk = 0;
 
@@ -149,6 +150,10 @@ function mainLoop(){
         if(animationTimer % speed == 0){
             moving = false;
             playerControl = true;
+            if(fallingFront){
+                playerZ = chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)];
+                fallingFront = false;
+            }
         }
         playerAnalogZ -= falling;
 
@@ -282,7 +287,13 @@ function startWalking(xSpeed, ySpeed){
     if(edgeFallingImmunity){
         edgeFallingImmunity = false;
     }else{
-        playerZ = chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)];
+        consoleSet(ySpeed / speed);
+        if(ySpeed / speed == -1){
+            fallingFront = true;
+        }else{
+            playerZ = chunks[onChunk].chunkHeights[(playerY % chunkHeight) + ((playerX % chunkWidth) * chunkHeight)];
+            fallingFront = false;
+        }
     }
     playerControl = false;
     moving = true;
