@@ -13,8 +13,13 @@ var xDown = false;
 var talking = false;
 var onDialogue = 0;
 
+var playerHealth = 1;
+var maxPlayerHealth = 3;
+
 var font = new Image();
 font.src = "Assets/font.png";
+var heart = new Image();
+heart.src = "Assets/hearts.png";
 
 var chunks = [];
 
@@ -182,8 +187,17 @@ function mainLoop(){
         whiteBackground = 0;
     }
 
+    drawGUI();
 
     xDown = false;
+}
+
+function drawGUI(){
+    for(var i = 0; i < maxPlayerHealth; i++){
+        if(playerHealth > i){
+            ctx.drawImage(heart, 0, 0, 7, 8, 248 - (i * 8), 1, 7, 8);
+        }
+    }
 }
 
 function checkForNPCInteraction(){
@@ -191,6 +205,9 @@ function checkForNPCInteraction(){
         if(entities[i].x == playerX + facingX && entities[i].y == playerY + facingY && entities[i].z == playerZ && (xDown || talking)){
             talking = true;
             onDialogue = i;
+            if(i == 0){
+                playerHealth = 3;
+            }
             return true;
         }
     }
