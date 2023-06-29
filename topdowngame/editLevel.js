@@ -492,7 +492,7 @@ function calculateWallTiles(index, height){
     var x = 1;
     var y = 3;
 
-    if(index > chunkHeight && index < (chunkHeight * chunkWidth) - chunkHeight){
+    if(index >= chunkHeight && index < (chunkHeight * chunkWidth) - chunkHeight){
         if(chunks[onChunk].chunkHeights[index + chunkHeight] + height >= chunks[onChunk].chunkHeights[index]){
             if(chunks[onChunk].chunkHeights[index - chunkHeight] + height >= chunks[onChunk].chunkHeights[index]){
                 x = 1;
