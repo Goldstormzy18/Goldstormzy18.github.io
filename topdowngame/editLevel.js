@@ -63,7 +63,7 @@ var displayScale = 4;
 var mouseX = 0;
 var mouseY = 0;
 
-var renderWidth = 3;
+var renderWidth = 6;
 var renderHeight = 3;
 var edgeFallingImmunity = false;
 
