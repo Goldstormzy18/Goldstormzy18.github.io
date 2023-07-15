@@ -41,7 +41,7 @@ function generateWorld(rooms){
 
     for(var y = 0; y < worldHeight; y++){
         for(var x = 0; x < worldWidth; x++){
-            worldString += "█";
+            worldString += "W";
         }
         worldString += "<br/>";
     }
@@ -61,7 +61,7 @@ function generateWorld(rooms){
     for(var i = 0; i < roomListX.length - 1; i++){
         //var corridorWidth  = Math.abs(roomListX[i + 1] - roomListX[i]);
         for(var x = 0; Math.abs(x) < Math.abs(roomListX[i + 1] - roomListX[i]); x++){
-            worldString = worldString.substring(0, coordsToWorldPos(roomListX[i] + x, roomListY[i])) + " " + worldString.substring(coordsToWorldPos(roomListX[i] + x, roomListY[i]) + 1, worldString.length);
+            worldString = worldString.substring(0, coordsToWorldPos(roomListX[i] + x, roomListY[i])) + "." + worldString.substring(coordsToWorldPos(roomListX[i] + x, roomListY[i]) + 1, worldString.length);
             if(roomListX[i + 1] < roomListX[i]){
                 x -= 2;
             }
@@ -71,7 +71,7 @@ function generateWorld(rooms){
     for(var i = 0; i < roomListY.length - 1; i++){
         //var corridorWidth  = Math.abs(roomListX[i + 1] - roomListX[i]);
         for(var y = 0; Math.abs(y) < Math.abs(roomListY[i + 1] - roomListY[i]); y++){
-            worldString = worldString.substring(0, coordsToWorldPos(roomListX[i + 1], roomListY[i] + y)) + " " + worldString.substring(coordsToWorldPos(roomListX[i + 1], roomListY[i] + y) + 1, worldString.length);
+            worldString = worldString.substring(0, coordsToWorldPos(roomListX[i + 1], roomListY[i] + y)) + "." + worldString.substring(coordsToWorldPos(roomListX[i + 1], roomListY[i] + y) + 1, worldString.length);
             if(roomListY[i + 1] < roomListY[i]){
                 y -= 2;
             }
@@ -107,10 +107,10 @@ function coordsToWorldPos(inputX, inputY)
 
 //moves player a certain amount of tiles
 function movePlayer(dirX, dirY){
-    worldString = worldString.substring(0, coordsToWorldPos(playerX, playerY)) + " " + worldString.substring(coordsToWorldPos(playerX, playerY) + 1, worldString.length)
+    worldString = worldString.substring(0, coordsToWorldPos(playerX, playerY)) + "." + worldString.substring(coordsToWorldPos(playerX, playerY) + 1, worldString.length)
     playerX += dirX;
     playerY += dirY;
-    if(playerObject() == "█" || playerObject() == "M"){
+    if(playerObject() == "W" || playerObject() == "M"){
         playerX -= dirX;
         playerY -= dirY;
     }
@@ -156,7 +156,7 @@ function playerObject(){
 }
 
 function deleteEnemy(offsetX, offsetY){
-    worldString = worldString.substring(0, coordsToWorldPos(playerX + offsetX, playerY + offsetY)) + " " + worldString.substring(coordsToWorldPos(playerX + offsetX, playerY + offsetY) + 1, worldString.length);
+    worldString = worldString.substring(0, coordsToWorldPos(playerX + offsetX, playerY + offsetY)) + "." + worldString.substring(coordsToWorldPos(playerX + offsetX, playerY + offsetY) + 1, worldString.length);
     updateScreen();
 }
 function newGame(){
@@ -177,7 +177,7 @@ function newGame(){
 function generateObject(object){
     var objX;
     var objY;
-    while(worldString.substring(coordsToWorldPos(objX, objY), coordsToWorldPos(objX, objY) + 1) != " "){
+    while(worldString.substring(coordsToWorldPos(objX, objY), coordsToWorldPos(objX, objY) + 1) != "."){
         objX = Math.floor(Math.random() * worldWidth);
         objY = Math.floor(Math.random() * worldHeight);
     }
@@ -185,7 +185,7 @@ function generateObject(object){
 }
 //Special generation method that spawns both player character and player position variables
 function generatePlayer(){
-    while(worldString.substring(coordsToWorldPos(playerX, playerY), coordsToWorldPos(playerX, playerY) + 1) != " "){
+    while(worldString.substring(coordsToWorldPos(playerX, playerY), coordsToWorldPos(playerX, playerY) + 1) != "."){
         playerX = Math.floor(Math.random() * worldWidth);
         playerY = Math.floor(Math.random() * worldHeight);
     }
@@ -195,7 +195,7 @@ function generatePlayer(){
 function addWidthToRoom(input){
     var output = "";
     for(var i = 0; i < input; i++){
-        output += " ";
+        output += ".";
     }
     return output;
 }
