@@ -380,6 +380,15 @@ document.addEventListener('keydown', function(event){
         }
     }
 }, false);
+document.addEventListener('keyup', function(event){
+    if(inBattle){
+        var name = event.key;
+        var code = event.code;
+        if(name == " "){
+            attackButton();
+        }
+    }
+}, false);
 
 
 
