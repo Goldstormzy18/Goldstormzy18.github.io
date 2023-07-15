@@ -81,6 +81,9 @@ const server = http.createServer((req, res) => {
         res.end(data);
       }
     });
+  }else if(req.url.substring(req.url.length - 11, req.url.length) === "favicon.ico"){
+    res.writeHead(200, {'Content-Type': 'image/x-icon'} );
+    res.end();
   }else{
     console.log(" - Error");
     console.log(__dirname + req.url + " - Error");
