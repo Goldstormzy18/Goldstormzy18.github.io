@@ -326,7 +326,6 @@ function startWalking(xSpeed, ySpeed){
     if(edgeFallingImmunity){
         edgeFallingImmunity = false;
     }else{
-        consoleSet(ySpeed / speed);
         if(ySpeed / speed == -1){
             fallingFront = true;
         }else{
@@ -445,7 +444,19 @@ function drawChunks(){
     }
 }
 
+function scaleUp(){
+    if(displayScale > 1){
+        displayScale--;
+        display.style.width = (256 * displayScale).toString() + "px";
+    }
+}
 
+function scaleDown(){
+    if(displayScale < 5){
+        displayScale++;
+        display.style.width = (256 * displayScale).toString() + "px";
+    }
+}
 
 function consoleLog(input){
     document.getElementById("debug").innerHTML += input;

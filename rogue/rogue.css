@@ -2,7 +2,7 @@ body{
     background-color: rgb(210, 162, 255);
     text-align: center;
 }
-#gui{
+.gui{
     margin:auto;
     text-align: center;
     background-color: aliceblue;
