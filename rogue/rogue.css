@@ -1,6 +1,13 @@
 body{
-    background-color: rgb(210, 162, 255);
+    background-color: rgb(0,0,0);
     text-align: center;
+}
+.outerTerminal{
+    margin: auto;
+    display: inline;
+    padding: none;
+    border-style: solid;
+    border-color: rgb(82, 82, 82);
 }
 .gui{
     margin:auto;
@@ -26,7 +33,7 @@ body{
     margin: auto;
     width:50%;
     border-style: solid;
-    border-color: blueviolet;
+    border-color: rgb(82, 82, 82);
     text-align: center; 
     background-color: black; 
     color: white; 
