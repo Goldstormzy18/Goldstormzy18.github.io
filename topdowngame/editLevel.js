@@ -298,7 +298,12 @@ function checkForCollision(x, y){
         facingCostumeY = 1;
     }
     
-        
+    if(playerX - x < 0 ||
+       playerX - x > (renderWidth  * chunkWidth)  - 1 ||
+       playerY - y < 0 ||
+       playerY - y > (renderHeight * chunkHeight) - 1){
+        return false;
+    }
     if((playerX % chunkWidth) - x < 0 ||
        (playerY % chunkHeight) - y < 0 ||
        (playerX % chunkWidth) - x > chunkWidth - 1 ||
