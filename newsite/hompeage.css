@@ -1,0 +1,13 @@
+body{
+    text-align: center;
+    margin: 0;
+}
+.header{
+    background-color: gold;
+}
+.titleText{
+    font-size: 30pt;
+    font-weight: 800;
+}
+
+
