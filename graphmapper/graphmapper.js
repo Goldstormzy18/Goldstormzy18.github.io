@@ -8,14 +8,26 @@ window.addEventListener("resize", resizeCanvas);
 
 document.body.style.cursor = 'none';
 
+class Controller {
+    constructor() {
+        this.w = 0;
+        this.a = 0;
+        this.s = 0;
+        this.d = 0;
+    }
+};
+
 //document.title = "Hello, World!";
 
 var scrollX;
 var scrollY;
+var scrollSpeed = 5;
 var mouseX;
 var mouseY;
 var zoom = 30;
 var fps = 60;
+
+var controller = new Controller;
 
 setInterval(tick, 1000/fps);
 
@@ -24,8 +36,9 @@ function tick(){
     //scrollY = 10;
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    scrollX += 1;
-    scrollY += 2;
+    scrollX += ((controller.a - controller.d) * scrollSpeed);
+    scrollY += ((controller.w - controller.s) * scrollSpeed);
+    updateInputs();
     drawGridlines();
     drawVertFocus();
     drawMouse();
@@ -61,8 +74,41 @@ function drawMouse(){
     ctx.stroke();
 }
 
-function getInputs(){
+document.addEventListener('keydown', function(event){
+        var name = event.key;
+        var code = event.code;
+        if(name == "w"){
+            controller.w = 1;
+        }
+        if(name == "a"){
+            controller.a = 1;
+        }
+        if(name == "s"){
+            controller.s = 1;
+        }
+        if(name == "d"){
+            controller.d = 1;
+        }
+});
+document.addEventListener('keyup', function(event){
+        var name = event.key;
+        var code = event.code;
+        if(name == "w"){
+            controller.w = 0;
+        }
+        if(name == "a"){
+            controller.a = 0;
+        }
+        if(name == "s"){
+            controller.s = 0;
+        }
+        if(name == "d"){
+            controller.d = 0;
+        }
+});
 
+function updateInputs(){
+    
 }
 
 function drawGridlines(){
@@ -80,6 +126,16 @@ function drawGridlines(){
         ctx.lineTo(window.innerWidth, (scrollY % zoom) + (i * zoom) + 0.5);
         ctx.stroke();
     }
+    ctx.lineWidth = 3;
+    ctx.fillStyle = "#000000";
+    ctx.beginPath();
+    ctx.moveTo((scrollX) + 0.5, 0);
+    ctx.lineTo((scrollX) + 0.5, window.innerHeight);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, (scrollY) + 0.5);
+    ctx.lineTo(window.innerWidth, (scrollY) + 0.5);
+    ctx.stroke();
 }
 
 function resizeCanvas(){
@@ -93,3 +149,4 @@ canvas.addEventListener("mousemove", function(event){
     mouseX = event.clientX;
     mouseY = event.clientY;
 });
+
